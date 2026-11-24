@@ -1,0 +1,75 @@
+{
+  "title": "Southern Grid: a custom Microsoft Fabric demo",
+  "subtitle": "Asset health, end to end",
+  "story": {
+    "title": "Which asset fails next, and what's it worth?",
+    "org": "Southern Grid Transmission",
+    "problem": "Thousands of ageing network assets. The asset register, work orders and sensor readings sit in different systems, so nobody sees risk in one place.",
+    "pains": [
+      "Asset data in on-prem SQL Server, loaded by SSIS",
+      "Sensor files arrive every 15 minutes, messy and late",
+      "Every new source means a new pipeline"
+    ],
+    "measure": {"value": "$2.4M", "label": "Outage cost at risk on the Gold scorecard (illustrative)"},
+    "proves": [
+      "One ranked risk list from three messy sources",
+      "Bad data is caught and quarantined, not lost",
+      "A new feed goes live with metadata rows only"
+    ]
+  },
+  "architecture": {
+    "title": "How the demo is built in Fabric",
+    "stages_label": "MEDALLION IN ONE LAKEHOUSE",
+    "sources": [
+      {"name": "Asset system", "desc": "On-prem SQL Server"},
+      {"name": "SCADA files", "desc": "15-min CSV drop"},
+      {"name": "CRM", "desc": "Salesforce JSON"}
+    ],
+    "stages": [
+      {"name": "Landing", "desc": "Raw files kept by load date, so any day can be replayed"},
+      {"name": "Bronze", "desc": "Strings, appended per day, schema drift absorbed"},
+      {"name": "Silver", "desc": "Typed, deduped, DQ checked, PII removed"},
+      {"name": "Gold", "desc": "Risk scorecard with an illustrative dollar figure"}
+    ],
+    "consumers": [
+      {"name": "Power BI", "desc": "Direct Lake report"},
+      {"name": "Data agent", "desc": "Ask in plain English"},
+      {"name": "Ops alerts", "desc": "Real-Time Intelligence"}
+    ],
+    "spine": {"name": "meta.* control tables drive every step", "desc": "Sources, load type, DQ rules and PII treatment live in config, not code"}
+  },
+  "moments": {
+    "title": "What the audience sees, step by step",
+    "items": [
+      {"tag": "Day 1", "title": "Messy data arrives", "desc": "Nulls, bad dates and negative readings hit the rules.", "proves": "Technical and business DQ"},
+      {"tag": "Day 2", "title": "Events before assets", "desc": "Work orders arrive for an asset not loaded yet.", "proves": "Quarantine, not data loss"},
+      {"tag": "Day 3", "title": "Drift and a breach", "desc": "A new column appears and a transformer overheats.", "proves": "Schema drift and live risk"},
+      {"tag": "Live", "title": "Onboard a new feed", "desc": "Add BoM weather with three metadata rows.", "proves": "Scale without new code"}
+    ],
+    "takeaway": "The same framework scales from 3 tables to 300: add rows, not pipelines"
+  },
+  "takeaway": {
+    "title": "Everything you need to run it",
+    "assets": [
+      {"name": "15 notebooks", "desc": "Setup, data generator, medallion"},
+      {"name": "2 pipelines", "desc": "One orchestrator for every source"},
+      {"name": "Warehouse + MLV", "desc": "Gold in T-SQL or lake views"},
+      {"name": "Real-time", "desc": "Stream simulator and KQL"},
+      {"name": "Power BI", "desc": "Report project, Direct Lake"},
+      {"name": "AI guide", "desc": "Copilot, data agent, ontology"}
+    ],
+    "steps": [
+      "Create a lakehouse and import the notebooks",
+      "Run setup, then the generator for Day 1",
+      "Step through Days 2 and 3, then onboard live"
+    ],
+    "outcome": "About 20 minutes to set up on an F2 or trial capacity"
+  },
+  "notes": {
+    "cover": "Open with the business question, not the product: which asset fails next, and what does it cost?",
+    "story": "Southern Grid is fictional; every name and figure is made up. The dollar figure is illustrative.",
+    "architecture": "Walk left to right. Stress that the spine (control tables) is what makes it scale.",
+    "moments": "Run each moment live. Pause after Day 2 to show the quarantine table.",
+    "takeaway": "Point to the README Quick start. Offer to run a dry run with the team."
+  }
+}
