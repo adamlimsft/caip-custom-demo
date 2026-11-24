@@ -1,0 +1,99 @@
+{
+  "title": "Southern Grid on Microsoft Fabric: the design",
+  "subtitle": "Architecture behind the demo",
+  "notes": {"cover": "This deck shows the target design the demo proves. All names and figures are fictional."},
+  "slides": [
+    {
+      "type": "architecture",
+      "title": "One platform, from source to decision",
+      "stages_label": "ONELAKE: ONE COPY OF THE DATA",
+      "sources": [
+        {"name": "SQL Server", "desc": "Assets, work orders"},
+        {"name": "File drops", "desc": "Sensor CSV, Excel"},
+        {"name": "SaaS apps", "desc": "Salesforce, HR, ERP"}
+      ],
+      "stages": [
+        {"name": "Ingest", "desc": "Copy, mirror or shortcut: the lightest option per source"},
+        {"name": "Bronze", "desc": "Raw history, replayable, schema drift absorbed"},
+        {"name": "Silver", "desc": "Clean, conformed, quality checked, PII removed"},
+        {"name": "Gold", "desc": "Models and scorecards ready for business use"}
+      ],
+      "consumers": [
+        {"name": "Power BI", "desc": "Direct Lake reports"},
+        {"name": "AI", "desc": "Copilot, data agents"},
+        {"name": "Ops", "desc": "Real-time alerts"}
+      ],
+      "spine": {"name": "Governed end to end", "desc": "Metadata-driven pipelines, OneLake catalog, lineage and security on every layer"},
+      "notes": "Walk left to right. Sources stay where they are where possible; OneLake keeps one copy."
+    },
+    {
+      "type": "table",
+      "title": "Design decisions and why",
+      "widths": [2.6, 4.6, 4.88],
+      "rows": [
+        ["Decision", "What we do", "Why it matters"],
+        ["Landing zone", "Keep raw files by load date", "Replay any day without the source"],
+        ["Bronze", "Append raw data per day", "Reruns replace, never duplicate"],
+        ["Silver", "Types and rules held in metadata", "One bad row never fails a load"],
+        ["Gold", "Lakehouse or Warehouse per team", "Engineers and analysts both served"],
+        ["Ingestion", "One pipeline driven by config", "A new source is a new row, not code"]
+      ],
+      "band": "Use these questions to review any partner or SI design"
+    },
+    {
+      "type": "process",
+      "title": "How a new source goes live",
+      "steps": [
+        {"name": "Register", "desc": "Add the source and connection to the control table"},
+        {"name": "Map", "desc": "List objects, keys and load type: full or incremental"},
+        {"name": "Rules", "desc": "Attach technical and business quality rules"},
+        {"name": "Activate", "desc": "Flag it active; the next scheduled run picks it up"}
+      ],
+      "band": "Days, not weeks: no new pipeline, no new notebook",
+      "notes": "This is the live onboarding moment from the demo."
+    },
+    {
+      "type": "cards",
+      "title": "Quality, security and governance",
+      "cards": [
+        {"name": "Data quality", "items": ["Technical rules in Bronze to Silver", "Business rules in Silver to Gold", "Failed rows quarantined, not lost"]},
+        {"name": "Security", "items": ["Workspace and item roles", "Row and column security", "PII removed before Silver"], "lift": true},
+        {"name": "Governance", "items": ["OneLake catalog and tags", "Sensitivity labels", "Lineage source to report"]}
+      ],
+      "band": "Every rule and result is logged, so auditors see the full history"
+    },
+    {
+      "type": "lanes",
+      "title": "Ship changes safely with CI/CD",
+      "lanes": [
+        {"name": "Dev", "sub": "Git-connected workspace", "items": ["Feature branches", "Build and unit test", "Pull request review"]},
+        {"name": "Test", "sub": "Deployment pipeline", "items": ["Deploy from main", "Data and DQ checks", "Business sign-off"]},
+        {"name": "Prod", "sub": "Deployment pipeline", "items": ["Approved release", "Scheduled runs", "Monitoring and alerts"]}
+      ],
+      "band": {"name": "Azure DevOps or GitHub", "desc": "Branches, pull requests and release approvals; config and code versioned together"}
+    },
+    {
+      "type": "timeline",
+      "title": "Migrate without disrupting the business",
+      "phases": [
+        {"when": "WEEKS 1-4", "name": "Migrate", "lines": ["Rebuild loads as config", "Repoint models"], "now": true},
+        {"when": "WEEKS 5-8", "name": "Validate", "lines": ["Row counts and sums", "Side-by-side KPIs"]},
+        {"when": "WEEKS 9-12", "name": "Run in parallel", "lines": ["Both platforms load", "Users test reports"]},
+        {"when": "WEEK 13+", "name": "Cut over", "lines": ["Switch reports", "Retire old jobs"]}
+      ],
+      "band": "Wave by wave: start with one domain, then repeat the pattern",
+      "notes": "Timings are illustrative; size each wave with the customer."
+    },
+    {
+      "type": "value",
+      "title": "What this means for the business",
+      "measure": {"value": "$2.4M", "label": "Outage cost at risk, visible in one ranked list (illustrative)"},
+      "outcomes": [
+        {"name": "Faster onboarding", "desc": "New sources by config, not new code"},
+        {"name": "Trusted data", "desc": "Quality rules and lineage on every layer"},
+        {"name": "Ready for AI", "desc": "Gold models power Copilot and data agents"}
+      ],
+      "next": "Next step: a design workshop to map your sources to this pattern"
+    }
+  ]
+}
